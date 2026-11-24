@@ -13,7 +13,25 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const app = express();
 
-app.use(cors());
+const developmentOrigins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+];
+const configuredOrigins = (process.env.FRONTEND_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+const allowedOrigins = new Set([...developmentOrigins, ...configuredOrigins]);
+
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.has(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error("Origin is not allowed by CORS"));
+    }
+}));
 app.use(express.json());
 
 

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { apiUrl } from "./lib/api";
 import "./App.css";
 import Background3D from "./Background3D";
 const productImages = {
@@ -202,7 +203,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/login",
+        apiUrl("/api/auth/login"),
         {
           method: "POST",
           headers: {
@@ -248,7 +249,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/items",
+        apiUrl("/api/items"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -285,7 +286,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/balances",
+        apiUrl("/api/stock/balances"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -315,7 +316,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/movements",
+        apiUrl("/api/stock/movements"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -349,7 +350,7 @@ function App() {
 
       // Fetch dashboard data
       const dashboardResponse = await fetch(
-        "http://localhost:3000/api/dashboard",
+        apiUrl("/api/dashboard"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -368,7 +369,7 @@ function App() {
 
       // Fetch stock movements to resolve actor names
       const movementsResponse = await fetch(
-        "http://localhost:3000/api/stock/movements",
+        apiUrl("/api/stock/movements"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -419,7 +420,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/requests",
+        apiUrl("/api/requests"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -466,7 +467,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/items?search=${encodeURIComponent(searchValue)}`,
+        apiUrl(`/api/items?search=${encodeURIComponent(searchValue)}`),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -514,7 +515,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/items",
+        apiUrl("/api/items"),
         {
           method: "POST",
           headers: {
@@ -604,7 +605,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/items/${editItem.id}`,
+        apiUrl(`/api/items/${editItem.id}`),
         {
           method: "PUT",
           headers: {
@@ -678,7 +679,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/receipts",
+        apiUrl("/api/stock/receipts"),
         {
           method: "POST",
           headers: {
@@ -740,7 +741,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/stock/issue/${issueRequestId}`,
+        apiUrl(`/api/stock/issue/${issueRequestId}`),
         {
           method: "POST",
           headers: {
@@ -816,7 +817,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/returns",
+        apiUrl("/api/stock/returns"),
         {
           method: "POST",
           headers: {
@@ -927,7 +928,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/requests",
+        apiUrl("/api/requests"),
         {
           method: "POST",
           headers: {
@@ -978,7 +979,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/requests/${requestId}/submit`,
+        apiUrl(`/api/requests/${requestId}/submit`),
         {
           method: "POST",
           headers: {
@@ -1015,7 +1016,7 @@ function App() {
     setRequestReviewLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/requests/${requestId}/requester-review`, {
+      const response = await fetch(apiUrl(`/api/requests/${requestId}/requester-review`), {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -1032,7 +1033,7 @@ function App() {
   const handleRequestClarification = async (requestId, message) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/requests/${requestId}/clarification`, {
+      const response = await fetch(apiUrl(`/api/requests/${requestId}/clarification`), {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message })
@@ -1051,7 +1052,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/requests/${requestId}/approve`,
+        apiUrl(`/api/requests/${requestId}/approve`),
         {
           method: "POST",
           headers: {
@@ -1105,7 +1106,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/requests/${requestId}/reject`,
+        apiUrl(`/api/requests/${requestId}/reject`),
         {
           method: "POST",
           headers: {

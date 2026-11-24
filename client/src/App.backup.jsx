@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiUrl } from "./lib/api";
 import "./App.css";
 
 function App() {
@@ -116,7 +117,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/login",
+        apiUrl("/api/auth/login"),
         {
           method: "POST",
           headers: {
@@ -167,7 +168,7 @@ function App() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          "http://localhost:3000/api/items",
+          apiUrl("/api/items"),
           {
             headers: {
               Authorization: `Bearer ${token} `
@@ -209,7 +210,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/items?search=${encodeURIComponent(searchValue)}`,
+        apiUrl(`/api/items?search=${encodeURIComponent(searchValue)}`),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -260,7 +261,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/items",
+        apiUrl("/api/items"),
         {
           method: "POST",
 
@@ -303,7 +304,7 @@ function App() {
 
       // Fetch updated items
       const itemsResponse = await fetch(
-        "http://localhost:3000/api/items",
+        apiUrl("/api/items"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -374,7 +375,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/items/${editItem.id}`,
+        apiUrl(`/api/items/${editItem.id}`),
         {
           method: "PUT",
 
@@ -418,7 +419,7 @@ function App() {
 
       // Fetch updated items
       const itemsResponse = await fetch(
-        "http://localhost:3000/api/items",
+        apiUrl("/api/items"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -451,7 +452,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/balances",
+        apiUrl("/api/stock/balances"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -483,7 +484,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/movements",
+        apiUrl("/api/stock/movements"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -527,7 +528,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/stock/receipts",
+        apiUrl("/api/stock/receipts"),
         {
           method: "POST",
 
@@ -589,7 +590,7 @@ function App() {
 
       // Fetch dashboard data
       const dashboardResponse = await fetch(
-        "http://localhost:3000/api/dashboard",
+        apiUrl("/api/dashboard"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -609,7 +610,7 @@ function App() {
       // Fetch stock movements because this API already
       // provides the correct actor name
       const movementsResponse = await fetch(
-        "http://localhost:3000/api/stock/movements",
+        apiUrl("/api/stock/movements"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -675,7 +676,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/requests",
+        apiUrl("/api/requests"),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -744,7 +745,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:3000/api/requests",
+        apiUrl("/api/requests"),
         {
           method: "POST",
           headers: {
@@ -788,7 +789,7 @@ function App() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/requests/${requestId}/submit`,
+        apiUrl(`/api/requests/${requestId}/submit`),
         {
           method: "POST",
           headers: {
