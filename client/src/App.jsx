@@ -123,6 +123,8 @@ function App() {
   const [returnStore, setReturnStore] = useState("1");
   const [returnRequestLineId, setReturnRequestLineId] = useState("");
   const [returnQuantity, setReturnQuantity] = useState("");
+  const [returnCondition, setReturnCondition] = useState("GOOD");
+  const [returnConditionNote, setReturnConditionNote] = useState("");
   const [returnMessage, setReturnMessage] = useState("");
   const [returnError, setReturnError] = useState("");
 
@@ -168,6 +170,8 @@ function App() {
   const [requestLoading, setRequestLoading] = useState(false);
   const [requestMessage, setRequestMessage] = useState("");
   const [requestError, setRequestError] = useState("");
+  const [requestReview, setRequestReview] = useState(null);
+  const [requestReviewLoading, setRequestReviewLoading] = useState(false);
 
   // ==========================
   // LOGIN LOGIC
@@ -822,7 +826,9 @@ function App() {
           body: JSON.stringify({
             store_id: Number(returnStore),
             request_line_id: Number(returnRequestLineId),
-            quantity: Number(returnQuantity)
+            quantity: Number(returnQuantity),
+            return_condition: returnCondition,
+            condition_note: returnConditionNote
           })
         }
       );
@@ -840,11 +846,11 @@ function App() {
       }
 
       setReturnMessage(
-        `Item returned successfully: ${data.quantity} unit(s)`
+        `${returnCondition === "GOOD" ? "Item returned to available stock" : `Item recorded as ${returnCondition.toLowerCase()}`} : ${data.quantity} unit(s)`
       );
 
       addToast(
-        `Item returned successfully: ${data.quantity} unit(s)`,
+        `${returnCondition === "GOOD" ? "Item returned to available stock" : `Item recorded as ${returnCondition.toLowerCase()}`} : ${data.quantity} unit(s)`,
         "success",
         "Stock Returned"
       );
@@ -892,9 +898,13 @@ function App() {
     );
   };
 
-  const handleCreateRequest = async () => {
+  const handleCreateRequest = async ({ purpose, expectedReturnDate }) => {
     setRequestMessage("");
     setRequestError("");
+    if (!purpose?.trim() || !expectedReturnDate) {
+      setRequestError("Purpose and expected return date are required");
+      return;
+    }
 
     for (const line of requestLines) {
       if (!line.item_id || !line.requested_qty || Number(line.requested_qty) <= 0) {
@@ -924,7 +934,9 @@ function App() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({
+            body: JSON.stringify({
+            purpose: purpose.trim(),
+            expected_return_date: expectedReturnDate,
             items: requestLines.map((line) => ({
               item_id: Number(line.item_id),
               requested_qty: Number(line.requested_qty)
@@ -999,7 +1011,42 @@ function App() {
   // ==========================
   // SUPERVISOR APPROVAL
   // ==========================
-  const handleApproveRequest = async (requestId) => {
+  const handleLoadRequestReview = async (requestId) => {
+    setRequestReviewLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/requests/${requestId}/requester-review`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to load requester dossier");
+      setRequestReview(data);
+    } catch (error) {
+      setRequestReview(null);
+      addToast(error.message || "Unable to load requester dossier", "error");
+    } finally {
+      setRequestReviewLoading(false);
+    }
+  };
+
+  const handleRequestClarification = async (requestId, message) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/requests/${requestId}/clarification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to request clarification");
+      addToast("Clarification sent to requester", "success");
+      await handleLoadRequestReview(requestId);
+    } catch (error) {
+      addToast(error.message || "Unable to send clarification", "error");
+    }
+  };
+
+  const handleApproveRequest = async (requestId, decisionNote = "Approved by supervisor") => {
     try {
       const token = localStorage.getItem("token");
 
@@ -1012,7 +1059,7 @@ function App() {
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
-            decision_note: "Approved by supervisor"
+            decision_note: decisionNote
           })
         }
       );
@@ -1036,6 +1083,7 @@ function App() {
 
       await fetchRequests();
       await fetchDashboard();
+      await handleLoadRequestReview(requestId);
 
     } catch (error) {
       console.error("Approve request error:", error);
@@ -1043,14 +1091,8 @@ function App() {
     }
   };
 
-  const handleRejectRequest = async (requestId) => {
-    const reason = window.prompt("Enter rejection reason:");
-
-    if (reason === null) {
-      return;
-    }
-
-    if (!reason.trim()) {
+  const handleRejectRequest = async (requestId, reason) => {
+    if (!reason?.trim()) {
       addToast(
         "Rejection reason is required",
         "error",
@@ -1095,6 +1137,7 @@ function App() {
 
       await fetchRequests();
       await fetchDashboard();
+      await handleLoadRequestReview(requestId);
 
     } catch (error) {
       console.error("Reject request error:", error);
@@ -1348,6 +1391,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}
@@ -1388,6 +1435,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}
@@ -1428,6 +1479,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}
@@ -1452,6 +1507,10 @@ function App() {
             onSubmitRequest={handleSubmitRequest}
             onApproveRequest={handleApproveRequest}
             onRejectRequest={handleRejectRequest}
+            onRequestClarification={handleRequestClarification}
+            onLoadRequestReview={handleLoadRequestReview}
+            requestReview={requestReview}
+            requestReviewLoading={requestReviewLoading}
             requestLoading={requestLoading}
             requestMessage={requestMessage}
             requestError={requestError}
@@ -1518,6 +1577,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}
@@ -1558,6 +1621,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}
@@ -1598,6 +1665,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}
@@ -1638,6 +1709,10 @@ function App() {
             setReturnRequestLineId={setReturnRequestLineId}
             returnQuantity={returnQuantity}
             setReturnQuantity={setReturnQuantity}
+            returnCondition={returnCondition}
+            setReturnCondition={setReturnCondition}
+            returnConditionNote={returnConditionNote}
+            setReturnConditionNote={setReturnConditionNote}
             returnMessage={returnMessage}
             returnError={returnError}
             onReturnStock={handleReturnStock}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { StatusBadge } from "./StatusBadge";
 import { EmptyState } from "./EmptyState";
 import { SkeletonTableRows } from "./Skeleton";
@@ -40,6 +40,10 @@ export const StockManagementView = ({
   setReturnRequestLineId,
   returnQuantity = "",
   setReturnQuantity,
+  returnCondition = "GOOD",
+  setReturnCondition,
+  returnConditionNote = "",
+  setReturnConditionNote,
   returnMessage = "",
   returnError = "",
   onReturnStock,
@@ -519,6 +523,16 @@ export const StockManagementView = ({
                 </div>
               </div>
 
+              <div className="form-group return-condition-fields">
+                <label className="form-label" htmlFor="return-condition">Return condition</label>
+                <select id="return-condition" className="form-input form-select" value={returnCondition} onChange={(event) => setReturnCondition(event.target.value)}>
+                  <option value="GOOD">Good — return to available stock</option>
+                  <option value="DAMAGED">Damaged — quarantine and create maintenance ticket</option>
+                  <option value="MAINTENANCE">Needs maintenance — quarantine and create ticket</option>
+                </select>
+                {returnCondition !== "GOOD" && <label className="form-group" htmlFor="return-condition-note">Condition / maintenance note<textarea id="return-condition-note" className="form-input" value={returnConditionNote} onChange={(event) => setReturnConditionNote(event.target.value)} maxLength={1000} required placeholder="Describe the issue" /></label>}
+              </div>
+
               <div className="form-actions-row">
                 <button
                   type="submit"
@@ -526,7 +540,8 @@ export const StockManagementView = ({
                   disabled={
                     stockLoading ||
                     !returnRequestLineId ||
-                    !returnQuantity
+                    !returnQuantity ||
+                    (returnCondition !== "GOOD" && !returnConditionNote.trim())
                   }
                 >
                   <PackageIcon size={16} />

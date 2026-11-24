@@ -2895,6 +2895,44 @@ textarea {
    GLASSMORPHISM + MOVING BACKGROUND
    ========================================================= */
 
+.request-review-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(200px, 1fr);
+  gap: 16px;
+  margin: 18px 0;
+}
+.request-review-fields textarea { min-height: 96px; resize: vertical; }
+.request-table-subtitle { display: block; margin-top: 4px; color: var(--royal-muted, #64748b); font-size: 12px; }
+.request-dossier { display: grid; gap: 18px; margin-top: 20px; padding: clamp(16px, 3vw, 26px); }
+.request-dossier-heading, .request-dossier-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.request-dossier-heading h3 { margin: 5px 0 0; font-size: 22px; }
+.request-dossier-eyebrow { color: var(--royal-pink, #2563eb); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.request-dossier-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.request-dossier-card { min-width: 0; padding: 18px; border: 1px solid var(--royal-border, rgba(148, 163, 184, .25)); border-radius: 14px; background: var(--royal-surface, rgba(255, 255, 255, .72)); }
+.request-dossier-card h4 { margin: 0 0 14px; font-size: 15px; }
+.request-dossier-wide { width: 100%; }
+.request-dossier-card dl, .request-check-list { display: grid; gap: 10px; margin: 0; }
+.request-dossier-card dl > div { display: flex; justify-content: space-between; gap: 16px; }
+.request-dossier-card dt, .request-dossier-note { color: var(--royal-muted, #64748b); font-size: 12px; }
+.request-dossier-card dd { margin: 0; text-align: right; font-size: 13px; font-weight: 650; }
+.review-check { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: 12px; }
+.review-check > span:first-child { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; font-weight: 800; }
+.review-check.is-valid > span:first-child { background: #dcfce7; color: #166534; }
+.review-check.is-invalid > span:first-child { background: #fee2e2; color: #991b1b; }
+.review-check strong, .request-dossier-count { font-size: 11px; }
+.review-check.is-invalid strong { color: #b91c1c; }
+.request-warning-list { margin-top: 14px; padding: 12px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: 12px; }
+.request-warning-list p { margin: 8px 0 0; }
+.request-asset-list { display: grid; gap: 10px; padding: 0; list-style: none; }
+.request-asset-list li { display: grid; gap: 4px; }
+.request-asset-list span { color: var(--royal-muted, #64748b); font-size: 12px; }
+@media (max-width: 720px) {
+  .request-review-fields, .request-dossier-grid { grid-template-columns: 1fr; }
+  .request-dossier-card dl > div { align-items: flex-start; }
+  .review-check { grid-template-columns: 24px minmax(0, 1fr); }
+  .review-check strong { grid-column: 2; }
+  .request-dossier-actions > button { flex: 1 1 100%; }
+}
 
 /* =========================================================
    ROOT
